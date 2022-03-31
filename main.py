@@ -4,7 +4,7 @@ import discord, os, datetime, time, random
 import colorama as col
 from discord.utils import get
 
-TOKEN = "OTQ3MzQzMTg5MzUyNzk2MjIw.Yhr4GQ.iZoHIGBFJcCKqeZX51FZDjDifSI"
+TOKEN = "Your not allowed to see this!"
 PREFIX = "hesa"
 ADMIN = "BWP09"
 FRIENDS = [ADMIN, "K!ng", "SodaCan3456", "leeeeeeeeee"]
