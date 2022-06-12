@@ -3,43 +3,40 @@
 # copilot is amazing
 # python 3.10 or higher
 
-import discord, os, datetime, time, random, asyncio
+import discord, os, datetime, random, asyncio
 import colorama as col
 from discord.utils import get
 
 
 # Setup variables
-TOKEN = "" # DO NOT SHARE THIS CODE WITH ANYONE
+TOKEN = "OTQ3MzQzMTg5MzUyNzk2MjIw.G-z72b._Eqe4Hgn1b4hGShT3tV5c7cIYPbOKhB1PGsCrk" # DO NOT SHARE THIS CODE WITH ANYONE
 PREFIX = "hesa" # Bot's command activation string
 ADMIN = "BWP09" # Bot Admin's username without the #number
-FRIENDS = [ADMIN, "K!ng", "SodaCan3456"] # List of friends
-COLOR = 0x009f9f # Deafult color
+FRIENDS = [ADMIN, "K!ng", "SodaCan3456", "wimp", "Monoball"] # List of friends
+COLOR = 0x009f9f # Default color
 VERSION = "B.0.10.0..19.5.22" # Self-explanatory
-ACTIVATOR_EQUALS = ["test1", "test2", "test3"]
-RESPONCES_EQUAL = ["hi1", "hi2", "hi3"]
 # loop = asyncio.get_event_loop()
 last_err_msg, msg = "", ""
 kid = 0
-suspend_channels = []
-suspend_guilds = []
+suspend_channels, suspend_guilds = [], []
 
 os.system("color") # Needed for colorama module
 client = discord.Client()
 
 # Make a function to log console output to file
-def log_to_file(file_name, message):
+def log_to_file(file_name, text):
     date = datetime.date.today().strftime("%m-%d-%y")
     with open(file_name, "a", encoding = "utf-8") as f:
-        f.write(f"[{get_date()} {get_time()}]: {message}")
+        f.write(f"[{get_date()} {get_time()}]: {text}")
 
-# Make a function with two args, file_name and message, to write to a file
-def write_file(file_name, message):
+# Function to write to a file
+def write_file(file_name, text):
     with open(file_name, "r+", encoding = "utf-8") as f:
         f.seek(0)
         f.truncate()
-        f.write(f"{message}")
+        f.write(f"{text}")
 
-# Make a function with one args, file_name, read a file and return the content
+# Function to read from a file
 def read_file(file_name):
     with open(file_name, "r", encoding = "utf-8") as f:
         return f.read()
@@ -48,16 +45,16 @@ def get_time(): # Used for getting time
     time = datetime.datetime.now()
     return time.strftime("%H:%M:%S") 
 
-def get_date(type = 0): # Used for getting date
+def get_date(date_type = 0): # Used for getting date
     date = datetime.date.today()
-    match type:
+    match date_type:
         case 0:
             return date.strftime("%m/%d/%y")
         case 1:
             return date.strftime("%m-%d-%y")
 
-def err(str, errstate): # Error logging
-    print(f"{col.Fore.YELLOW}>[Error Handler]: {errstate}")
+def err(str, err_state): # Error logging
+    print(f"{col.Fore.YELLOW}>[Error Handler]: {err_state}")
     return f"[Error Handler]: {str}"
 
 @client.event
@@ -94,7 +91,7 @@ async def on_message_edit(before, after): # Runs when a message is edited, and l
 async def on_message(message): # Runs whenever a message is sent
     # More setup variables
     try:
-        f1 = open("data/blacklist_all.txt", "r+") # Opens the unversal blacklist file
+        f1 = open("data/blacklist_all.txt", "r+") # Opens the universal blacklist file
         f2 = open("data/blacklist_response.txt", "r+") # Opens the response blacklist file
         blacklisted_channels_all = f1.read().split(", ")
         blacklisted_channels_response = f2.read().split(", ")
@@ -108,13 +105,11 @@ async def on_message(message): # Runs whenever a message is sent
     channel = str(message.channel)
     server = str(message.guild)
     channel_id = str(message.channel.id)
-    guild_id = str(message.guild.id)
+    
+    try: guild_id = str(message.guild.id)
+    except: pass
 
-    # Friend check
-    if username not in FRIENDS:
-        print(f"{col.Fore.LIGHTMAGENTA_EX}[{get_date()}: {get_time()}]: {col.Fore.GREEN}[{server}: {col.Fore.LIGHTGREEN_EX}{channel}{col.Fore.GREEN}]: {col.Fore.CYAN}{username}: {col.Fore.LIGHTBLUE_EX}{user_message}")
-    elif username in FRIENDS:
-        print(f"{col.Fore.LIGHTMAGENTA_EX}[{get_date()}: {get_time()}]: {col.Fore.GREEN}[{server}: {col.Fore.LIGHTGREEN_EX}{channel}{col.Fore.GREEN}]: {col.Fore.CYAN}\033[4m{username}:\033[0m {col.Fore.LIGHTBLUE_EX}{user_message}")
+    print(f"{col.Fore.LIGHTMAGENTA_EX}[{get_date()}: {get_time()}]: {col.Fore.GREEN}[{server}: {col.Fore.LIGHTGREEN_EX}{channel}{col.Fore.GREEN}]: {col.Fore.CYAN}{username}: {col.Fore.LIGHTBLUE_EX}{user_message}")
     
     log_to_file(f"logs/LOG-{get_date(1)}.txt", f"[{server}: {channel}]: {username}: {user_message}\n") # Logs console output to file
     
@@ -175,7 +170,7 @@ async def on_message(message): # Runs whenever a message is sent
     elif user_message.lower().count("(hesa be quiet)") > 0: pass
 
     elif user_message.lower() == "hesa channel_id":
-        await message.channel.send(f"{channel_id}")
+        await message.channel.send(channel_id)
 
     # Command Start
     elif user_message.lower() == f"{PREFIX} test": # Test command
@@ -186,18 +181,11 @@ async def on_message(message): # Runs whenever a message is sent
             try:
                 status_type = user_message.split("| ")[1]
                 match status_type:
-                    case "online":
-                        await client.change_presence(status=discord.Status.online)
-                        await message.add_reaction("☑️")
-                    case "offline":
-                        await client.change_presence(status=discord.Status.invisible)
-                        await message.add_reaction("☑️")
-                    case "idle":
-                        await client.change_presence(status=discord.Status.idle)
-                        await message.add_reaction("☑️")
-                    case "dnd":
-                        await client.change_presence(status=discord.Status.dnd)
-                        await message.add_reaction("☑️")
+                    case "online":  await client.change_presence(status=discord.Status.online)
+                    case "offline": await client.change_presence(status=discord.Status.invisible)
+                    case "idle":    await client.change_presence(status=discord.Status.idle)
+                    case "dnd":     await client.change_presence(status=discord.Status.dnd)
+                await message.add_reaction("☑️")
             except Exception as e:
                 last_err_msg = e
                 await message.channel.send(err("Syntax", str(e)), reference = message)
@@ -216,8 +204,8 @@ async def on_message(message): # Runs whenever a message is sent
     elif user_message.lower() == f"{PREFIX} help": # A help command
         embed_var = discord.Embed(title="hesa help", description=f"""
         `{PREFIX} help` - shows this message
-        `{PREFIX}` <vc, join> - joins the voice channel
-        `{PREFIX}` <leave> - leaves the voice channel
+        `{PREFIX} <vc, join>` - joins the voice channel
+        `{PREFIX} <leave>` - leaves the voice channel
         `{PREFIX} test` - for a test message
         `{PREFIX} status | <online, offline, idle, dnd>` - change the bot's status
         `{PREFIX} status msg | <message>` - change the bot's status message
@@ -234,7 +222,7 @@ async def on_message(message): # Runs whenever a message is sent
         v{VERSION}
         """, color=COLOR)
         await message.add_reaction("☑️")
-        await message.channel.send(embed=embed_var, reference = message)
+        await message.channel.send(embed = embed_var, reference = message)
 
     
     elif user_message.lower() == f"{PREFIX} kys" and username == ADMIN: # Used to stop the bot, only for the admin
@@ -281,7 +269,7 @@ async def on_message(message): # Runs whenever a message is sent
     elif user_message.lower() == f"{PREFIX} k*dcounter": # You can figure out what this does
         embed_var = discord.Embed(title="K*d counter", description=f"The k*d counter is at {kid}", color=COLOR, reference = message)
         await message.add_reaction("☑️")
-        await message.channel.send(embed=embed_var)
+        await message.channel.send(embed = embed_var, reference = message)
 
     elif user_message.lower().startswith(f"{PREFIX} spam |"): # Spam (one large message)
         global msg
@@ -300,7 +288,7 @@ async def on_message(message): # Runs whenever a message is sent
             msg = ""
         except Exception as e:
             last_err_msg = e
-            if str(e).lower().count("400 bad request") > 0:
+            if str(e).lower().count("4000 bad request") > 0:
                 await message.channel.send(err("Amount of messages is too high", str(e)), reference = message)
             else:
                 await message.channel.send(err("Syntax", str(e)), reference = message)
@@ -384,35 +372,9 @@ async def on_message(message): # Runs whenever a message is sent
         await message.add_reaction("☑️")
     # Command End
 
-
-    # Notify Start, runs an ahk script that sends a notification to the user running the bot
-    elif user_message.lower().count("brandon") > 0:
-        os.system(f"notify.ahk \"<{username}> {user_message}\"")
-
-    elif user_message.lower().count("bradly") > 0:
-        os.system(f"notify.ahk \"<{username}> {user_message}\"")
-
-    elif user_message.lower().count("bradon") > 0:
-        os.system(f"notify.ahk \"<{username}> {user_message}\"")
-
-    elif user_message.lower().count("braden") > 0:
-        os.system(f"notify.ahk \"<{username}> {user_message}\"")
-
-    elif user_message.lower().count("<@!778024940158844938>") > 0:
-        os.system(f"notify.ahk \"<{username}> {user_message}\"")
-    # Notify End
-
     # Response Start
     elif channel_id in blacklisted_channels_response: return # If the channel is blacklisted, ignore the message
-
-    elif user_message.lower() in ACTIVATOR_EQUALS:
-        i = ACTIVATOR_EQUALS.index(user_message.lower())
-        await message.channel.send(f"{RESPONCES_EQUAL[i]}")
     
-    # elif user_message.lower() in ACTIVATOR_CONTAINS:
-    #     i = ACTIVATOR_CONTAINS.index(user_message.lower())
-    #     await message.channel.send(f"{RESPONCES_CONTAINS[i]}")
-
     elif user_message.lower() == "stop":
         await message.channel.send(f"stop", reference = message)
 
@@ -427,7 +389,7 @@ async def on_message(message): # Runs whenever a message is sent
 
     elif user_message.lower() == "cody":
         await message.channel.send(". . .")
-        time.sleep(1)
+        asyncio.sleep(1)
         await message.channel.send("lol jk")
 
     elif user_message.lower() == "kylie":
@@ -442,6 +404,9 @@ async def on_message(message): # Runs whenever a message is sent
 
     elif user_message.lower() == "kellog":
         await message.channel.send("is it super kellog krazy time?")
+    
+    elif user_message.lower() == "brandon":
+        await message.channel.send("SOURCE ENGINE")
 
     elif user_message.lower() == "yeah":
         await message.channel.send("yeah")
